@@ -13,6 +13,7 @@ from flask import Flask
 from flask_cors import CORS
 from server.extensions import db
 from server.models import User
+from server.blueprints.user import user_bp
 
 
 def create_app(config_name=None):

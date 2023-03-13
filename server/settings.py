@@ -22,23 +22,6 @@ basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 #     USER_EFS = 'user'
 #     TEACHER_EFS = 'teacher'
 #     GROUP_EFS = 'group'
-import os
-import sys
-import os
-import sys
-
-
-basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-
-
-class Operations:
-    CONFIRM = 'confirm'
-    RESET_PASSWORD = 'reset-password'
-    CHANGE_EMAIL = 'change-emails'
-
-    USER_EFS = 'user'
-    TEACHER_EFS = 'teacher'
-    GROUP_EFS = 'group'
 
 
 # 'mysql+pymysql://用户名称:密码@localhost:端口/数据库名称'

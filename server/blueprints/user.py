@@ -11,7 +11,7 @@ from flask import current_app, jsonify, Blueprint, url_for
 
 from server.models import User
 from server.extensions import db
-from server.utils import generate_token, extract_id_from_token, validate_token
+# from server.utils import generate_token, extract_id_from_token, validate_token
 
 
 user_bp = Blueprint('user', __name__)
