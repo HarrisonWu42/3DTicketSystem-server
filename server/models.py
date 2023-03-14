@@ -24,7 +24,7 @@ cart_table = db.Table('cart',
                 db.Column('select_status', db.Boolean, default=False),
                 db.Column('create_timestamp', db.DateTime, default=datetime.utcnow),
                 db.Column('update_timestamp', db.DateTime)
-                )
+                )   # many-to-many
 
 # class Cart(db.Model):
 #     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -34,19 +34,6 @@ cart_table = db.Table('cart',
 #     select_status = db.Column(db.Integer)
 #     create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 #     update_timestamp = db.Column(db.DateTime)
-
-
-class Ticket(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    order_number = db.Column(db.String(30), db.ForeignKey('order.order_number'))
-    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))
-    etc_name = db.Column(db.String(30))
-    begin_timestamp = db.Column(db.DateTime)
-    end_timestamp = db.Column(db.DateTime)
-    seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'))
-    seat_name = db.Column(db.String(30))
-    seat_type = db.Column(db.Integer)
-    price = db.Column(db.Integer)
 
 
 class User(db.Model, UserMixin):
@@ -59,8 +46,8 @@ class User(db.Model, UserMixin):
     deleted = db.Column(db.Boolean, default=False)
     delete_timestamp = db.Column(db.DateTime)
 
-    orders = db.relationship("Order", back_populates="user")
-    seats = db.relationship("Seat", secondary=cart_table, back_populates="users")
+    orders = db.relationship("Order", back_populates="user")    # one-to-many
+    seats = db.relationship("Seat", secondary=cart_table, back_populates="users")  # many-to-many
 
     def get_id(self):
         return self.id
@@ -103,11 +90,11 @@ class Seat(db.Model):
     price = db.Column(db.Integer)
     status = db.Column(db.Integer, default=0)
 
-    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))
+    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id')) # many
     etc = db.relationship('Etc', back_populates="seats")
     ticket = db.relationship('Ticket', uselist=False)
 
-    users = db.relationship("User", secondary=cart_table, back_populates="seats")
+    users = db.relationship("User", secondary=cart_table, back_populates="seats")   # many-to-many
 
 
 class Media(db.Model):
@@ -130,6 +117,19 @@ class Order(db.Model):
     create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     update_timestamp = db.Column(db.DateTime)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User', back_populates="orders")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))   # many-to-one
+    user = db.relationship('User', back_populates="orders")     # many-to-one
     ticket = db.relationship('Ticket', uselist=False)
+
+
+class Ticket(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    order_number = db.Column(db.String(30), db.ForeignKey('order.order_number'))
+    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))
+    etc_name = db.Column(db.String(30))
+    begin_timestamp = db.Column(db.DateTime)
+    end_timestamp = db.Column(db.DateTime)
+    seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'))
+    seat_name = db.Column(db.String(30))
+    seat_type = db.Column(db.Integer)
+    price = db.Column(db.Integer)
