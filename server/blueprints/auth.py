@@ -7,15 +7,13 @@
 # @Software: PyCharm
 
 
-
-
 from flask import redirect, url_for, Blueprint, make_response, jsonify, request
 from flask_login import login_user, logout_user, login_required, current_user
 # from server.emails import send_confirm_email, send_reset_password_email
 from server.extensions import db
+from server.forms.auth import LoginForm, RegisterForm
 # from server.forms.auth import RegisterForm, LoginForm, ForgetPasswordForm, ResetPasswordForm
 from server.models import User
-from server.settings import Operations
 # from server.utils import generate_token, validate_token, extract_id_from_token
 from server.decorators import confirm_required
 
@@ -24,26 +22,25 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-
     # if current_user.is_authenticated:  # 是否登录
     #     return jsonify(code=303, message="Redirect to main page.")
 
     form = LoginForm()
 
-    if form.email.data is not None:
-        user = User.query.filter_by(email=form.email.data.lower()).first()
-        if user is not None:
-            if user.validate_password(form.password.data):
-                if login_user(user):
-                    role = Role.query.get(user.role_id)
-                    return jsonify(code=200, message='Login success.', data={"id": user.id,
-                                                                             "name": user.name,
-                                                                             "email": user.email,
-                                                                             "confirmed": user.confirmed,
-                                                                             "role": role.name})
+    user = User.query.filter_by(name=form.name.data).first()
+    if user is not None and user.deleted is False:
+        if user.validate_password(form.password.data):
+            if login_user(user):
+                if user.type is 0:
+                    role = "user"
                 else:
-                    return jsonify(code=400, message='Error, your account is blocked.')
-            return jsonify(code=400, message='Error, invalid emails or password.')
+                    role = "admin"
+                return jsonify(code=200, message='Login success.', data={"id": user.id,
+                                                                         "name": user.name,
+                                                                         "role": role})
+            else:
+                return jsonify(code=400, message='Error, your account is blocked.')
+        return jsonify(code=400, message='Error, invalid password.')
 
     return jsonify(code=302, message='Redirect to login page.')
 
@@ -57,7 +54,7 @@ def login():
 #     form = LoginForm()
 #     if form.validate_on_submit() and current_user.validate_password(form.password.data):
 #         confirm_login()
-#         return redirect_back()
+#         return redirect_back()x
 #     # return render_template('auth/login.html', form=form)
 
 
@@ -71,32 +68,36 @@ def logout():
 @auth_bp.route('/register', methods=['POST'])
 def register():
     if current_user.is_authenticated:
-        return jsonify(code=303, message="redirect to main page.")
+        return jsonify(code=303, message="Redirect to main page.")
 
     form = RegisterForm()
 
-    user = User.query.filter_by(email=form.email.data.lower()).first()
+    user = User.query.filter_by(name=form.name.data).first()
+    # user = User.query.filter_by(email=form.email.data.lower()).first()
     if user is not None:
         return jsonify(code=401, message="User already exist.")
 
     name = form.name.data
-    email = form.email.data.lower()
-    password = form.password.data
-    user = User(name=name, email=email)
-    user.set_password(password)
+    # email = form.email.data.lower()
+    password1 = form.password1.data
+    password2 = form.password2.data
+    if password1 != password2:
+        return jsonify(code=402, message="Different password.")
+    # user = User(name=name, email=email)
+    user = User(name=name)
+    user.set_password(password1)
 
     db.session.add(user)
     db.session.commit()
 
-    user = User.query.filter_by(email=form.email.data.lower()).first()
-    id = user.id
+    user = User.query.filter_by(name=form.name.data).first()
+    # user = User.query.filter_by(email=form.email.data.lower()).first()
 
-    token = generate_token(user=user, operation=Operations.CONFIRM)
-    url = 'http://localhost:8080/#' + url_for(endpoint='auth.confirm', token=token)
+    # token = generate_token(user=user, operation=Operations.CONFIRM)
+    # url = 'http://localhost:8080/#' + url_for(endpoint='auth.confirm', token=token)
+    # send_confirm_email(user?=user, url=url)
 
-    send_confirm_email(user=user, url=url)
-
-    return jsonify(code=302, message="Register success, redirect to login page.", data={"id": id})
+    return jsonify(code=200, message="Register success, redirect to login page.", data={"id": user.id})
 
 
 # @auth_bp.route('/confirm/<token>', methods=['GET'])

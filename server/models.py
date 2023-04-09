@@ -42,7 +42,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(128))
     type = db.Column(db.Integer, default=0)     # 是否为管理员，0：不是管理员，1：是管理员
     create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    update_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     deleted = db.Column(db.Boolean, default=False)
     delete_timestamp = db.Column(db.DateTime)
 
@@ -54,14 +54,23 @@ class User(db.Model, UserMixin):
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
-        print(self.password)
+        # print(self.password)
 
     def validate_password(self, password):
         return check_password_hash(self.password, password)
 
+    def delete(self):
+        self.deleted = 1
+        self.delete_timestamp = datetime.now()
+        return self.delete_timestamp
+
     @property
     def is_admin(self):
         return self.type == 1
+
+    @property
+    def is_deleted(self):
+        return self.deleted == 1
 
 
 class Etc(db.Model):

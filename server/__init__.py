@@ -8,12 +8,14 @@
 
 
 import os
-
 from flask import Flask
 from flask_cors import CORS
-from server.extensions import db
+from server.extensions import db, login_manager
 from server.models import User
 from server.blueprints.user import user_bp
+from flask_login import current_user
+from server.blueprints.auth import auth_bp
+from server.blueprints.openai import openai_bp
 
 
 def create_app(config_name=None):
@@ -35,9 +37,10 @@ def create_app(config_name=None):
 def register_logging(app):
     pass
 
+
 def register_extensions(app):
     db.init_app(app)
-    # login_manager.init_app(app)
+    login_manager.init_app(app)
     # mail.init_app(app)
     # moment.init_app(app)
     # flask_excel.init_excel(app)
@@ -45,8 +48,10 @@ def register_extensions(app):
 
 def register_blueprints(app):
     # app.register_blueprint(home_bp, url_prefix='/home')
-    # app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/user')
+    app.register_blueprint(openai_bp, url_prefix='/openai')
+
     # app.register_blueprint(admin_bp, url_prefix='/admin')
     # app.register_blueprint(task_bp, url_prefix='/task')
     # app.register_blueprint(taskset_bp, url_prefix='/taskset')

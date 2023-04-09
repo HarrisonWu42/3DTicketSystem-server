@@ -29,7 +29,7 @@ SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/tickets'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
-# SECRET_KEY = os.getenv('SECRET_KEY', 'secret string')
+SECRET_KEY = os.getenv('SECRET_KEY', 'secret string')
 
 # # Email
 # MAIL_SERVER = 'smtp.qq.com'
@@ -45,3 +45,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 #
 # FILE_FOLDER = 'path/to/file_folder'
 # ALLOWED_FILETYPES = set(['sb3'])
+
+OPENAI_API_KEY = "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"
