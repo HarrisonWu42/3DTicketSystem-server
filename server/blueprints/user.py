@@ -95,3 +95,4 @@ def delete():
                                                                    'update_timestamp': user.update_timestamp,
                                                                    'delete_timestamp': detele_timestamp
                                                                    })
+
