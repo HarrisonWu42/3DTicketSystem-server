@@ -99,7 +99,7 @@ class Seat(db.Model):
     price = db.Column(db.Integer)
     status = db.Column(db.Integer, default=0)
 
-    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id')) # many
+    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))  # many
     etc = db.relationship('Etc', back_populates="seats")
     ticket = db.relationship('Ticket', uselist=False)
 

@@ -10,11 +10,14 @@
 import os
 from flask import Flask
 from flask_cors import CORS
+from flask_login import current_user
 from server.extensions import db, login_manager
 from server.models import User
 from server.blueprints.user import user_bp
-from flask_login import current_user
 from server.blueprints.auth import auth_bp
+from server.blueprints.seat import seat_bp
+from server.blueprints.etc import etc_bp
+from server.blueprints.media import media_bp
 from server.blueprints.openai import openai_bp
 
 
@@ -50,10 +53,11 @@ def register_blueprints(app):
     # app.register_blueprint(home_bp, url_prefix='/home')
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/user')
+    app.register_blueprint(seat_bp, url_prefix='/seat')
+    app.register_blueprint(etc_bp, url_prefix='/etc')
     app.register_blueprint(openai_bp, url_prefix='/openai')
+    app.register_blueprint(media_bp, url_prefix='/media')
 
-    # app.register_blueprint(admin_bp, url_prefix='/admin')
-    # app.register_blueprint(task_bp, url_prefix='/task')
     # app.register_blueprint(taskset_bp, url_prefix='/taskset')
     # app.register_blueprint(group_bp, url_prefix='/group')
     # app.register_blueprint(project_bp, url_prefix='/project')
