@@ -15,16 +15,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from server.extensions import db
 
-# Relation Table
-# Cart
-# cart_table = db.Table('cart',
-#                 db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-#                 db.Column('seat_id', db.Integer, db.ForeignKey('seat.id')),
-#                 db.Column('etc_id', db.Integer),    # 不确定要不要连外键，再说
-#                 db.Column('select_status', db.Boolean, default=False),
-#                 db.Column('create_timestamp', db.DateTime, default=datetime.utcnow),
-#                 db.Column('update_timestamp', db.DateTime, default=datetime.utcnow)
-#                 )   # many-to-many
+
+class Bullet(db.Model):
+    __tablename__ = 'bullet'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))
+    create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    msg = db.Column(db.String(255))
+
+    user = db.relationship('User', back_populates='user_etcs')
+    etc = db.relationship('Etc', back_populates='etc_users')
 
 
 class Cart(db.Model):
@@ -53,6 +54,7 @@ class User(db.Model, UserMixin):
 
     orders = db.relationship("Order", back_populates="user")    # one-to-many
     user_seats = db.relationship("Cart", back_populates="user")  # many-to-many
+    user_etcs = db.relationship("Bullet", back_populates="user")  # many-to-many
 
     def get_id(self):
         return self.id
@@ -105,11 +107,10 @@ class Etc(db.Model):
 
     # relationship
     #   back_populates 双向关系
-    #   secondary
     seats = db.relationship("Seat", back_populates="etc")
     medias = db.relationship("Media", back_populates="etc")
     ticket = db.relationship('Ticket', uselist=False)
-
+    etc_users = db.relationship("Bullet", back_populates="etc")  # many-to-many
 
 class Media(db.Model):
     id = db.Column(db.Integer, primary_key=True)

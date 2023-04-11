@@ -20,6 +20,8 @@ from server.blueprints.etc import etc_bp
 from server.blueprints.media import media_bp
 from server.blueprints.openai import openai_bp
 from server.blueprints.cart import cart_bp
+from server.blueprints.bullet import bullet_bp
+from server.blueprints.order import order_bp
 
 
 def create_app(config_name=None):
@@ -51,7 +53,6 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
-    # app.register_blueprint(home_bp, url_prefix='/home')
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(seat_bp, url_prefix='/seat')
@@ -59,8 +60,8 @@ def register_blueprints(app):
     app.register_blueprint(openai_bp, url_prefix='/openai')
     app.register_blueprint(media_bp, url_prefix='/media')
     app.register_blueprint(cart_bp, url_prefix='/cart')
-    # app.register_blueprint(group_bp, url_prefix='/group')
-    # app.register_blueprint(project_bp, url_prefix='/project')
+    app.register_blueprint(bullet_bp, url_prefix='/bullet')
+    app.register_blueprint(order_bp, url_prefix='/order')
 
 
 def regitser_shell_context(app):

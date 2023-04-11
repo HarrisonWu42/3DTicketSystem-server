@@ -133,11 +133,11 @@ def query_by_etc(etc_id, offset, page_size):
         return jsonify(code=401, message='Etc not exist.')
 
     seats = Seat.query.filter_by(etc_id=etc_id).all()
-    page_users = seats[(offset - 1) * page_size: offset * page_size]
+    page_seats = seats[(offset - 1) * page_size: offset * page_size]
     total_pages = ceil(len(seats) / page_size)
-    data = seats2json(page_users)
+    data = seats2json(page_seats)
     data['total_pages'] = total_pages
-    data['seat_num'] = len(page_users)
+    data['seat_num'] = len(page_seats)
 
     return jsonify(code=200, data=data)
 
