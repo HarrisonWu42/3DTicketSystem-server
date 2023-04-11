@@ -56,3 +56,19 @@ def seats2json(seats):
     json_dic = {"seats": json_array}
 
     return json_dic
+
+
+def etcs2json(etcs):
+    json_array = []
+    for etc in etcs:
+        etc_obj = {'id': etc.id,
+                   'name': etc.name,
+                   'description': etc.description,
+                   'begin_timestamp': etc.begin_timestamp,
+                   'end_timestamp': etc.end_timestamp,
+                   'create_timestamp': etc.create_timestamp,
+                   'update_timestamp': etc.update_timestamp}
+        json_array.append(etc_obj)
+    json_dic = {"etcs": json_array}
+
+    return json_dic

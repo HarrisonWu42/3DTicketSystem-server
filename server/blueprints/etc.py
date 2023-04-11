@@ -8,10 +8,13 @@
 
 
 from datetime import datetime
+from math import ceil
+
 from flask import Blueprint, jsonify
 from server.extensions import db
 from server.models import Etc
 from server.forms.etc import AddEtcForm, EditEtcForm, DeleteEtcForm
+from server.utils import etcs2json
 
 
 etc_bp = Blueprint('etc', __name__)
@@ -115,9 +118,18 @@ def query_etc_info(etc_id):
 
 
 # 查询场次列表（根据时间）
-@etc_bp.route('/x4', methods=['GET'])
-def x4():
-    pass
+@etc_bp.route('/query_all/<offset>/<page_size>', methods=['GET'])
+def query_all(offset, page_size):
+    offset = int(offset)
+    page_size = int(page_size)
+    etcs = Etc.query.all()
+    page_etcs = etcs[(offset - 1) * page_size: offset * page_size]
+    total_pages = ceil(len(etcs) / page_size)
+    data = etcs2json(page_etcs)
+    data['total_pages'] = total_pages
+    data['seat_num'] = len(page_etcs)
+
+    return jsonify(code=200, data=data)
 
 
 # 搜索场次（根据名字）
