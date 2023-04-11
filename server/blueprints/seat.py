@@ -78,6 +78,29 @@ def edit():
                                                                  })
 
 
+# 删除座位
+@seat_bp.route('/delete', methods=['POST'])
+def delete():
+    form = DeleteSeatForm()
+    id = form.id.data
+    seat = Seat.query.get(id)
+
+    if seat is None:
+        return jsonify(code=403, message='Seat not exist.')
+
+    db.session.delete(seat)
+    db.session.commit()
+
+    return jsonify(code=200, message='Delete seat success.', data={'id': seat.id,
+                                                                   'name': seat.name,
+                                                                   'type': seat.type,
+                                                                   'create_timestamp': seat.create_timestamp,
+                                                                   'update_timestamp': seat.update_timestamp,
+                                                                   'price': seat.price,
+                                                                   'status': seat.status,
+                                                                   'etc_id': seat.etc_id})
+
+
 # 获取座位信息
 @seat_bp.route('/query/<seat_id>', methods=['GET'])
 def query_seat_info(seat_id):
@@ -135,26 +158,3 @@ def search_by_name(seat_name):
                                                        'status': seat.status,
                                                        'etc_id': seat.etc_id
                                                        })
-
-
-# 删除座位
-@seat_bp.route('/delete', methods=['POST'])
-def delete():
-    form = DeleteSeatForm()
-    id = form.id.data
-    seat = Seat.query.get(id)
-
-    if seat is None:
-        return jsonify(code=403, message='Seat not exist.')
-
-    db.session.delete(seat)
-    db.session.commit()
-
-    return jsonify(code=200, message='Delete seat success.', data={'id': seat.id,
-                                                                   'name': seat.name,
-                                                                   'type': seat.type,
-                                                                   'create_timestamp': seat.create_timestamp,
-                                                                   'update_timestamp': seat.update_timestamp,
-                                                                   'price': seat.price,
-                                                                   'status': seat.status,
-                                                                   'etc_id': seat.etc_id})

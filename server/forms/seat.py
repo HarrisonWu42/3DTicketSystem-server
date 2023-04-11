@@ -16,6 +16,7 @@ class AddSeatForm(FlaskForm):
     name = StringField('name', validators=[DataRequired(), Length(1, 30)])
     type = StringField('type', validators=[DataRequired(), Length(1, 30)])
     price = IntegerField('price')
+    submit = SubmitField()
 
 
 class EditSeatForm(FlaskForm):
@@ -24,6 +25,7 @@ class EditSeatForm(FlaskForm):
     type = StringField('type', validators=[DataRequired(), Length(1, 30)])
     price = IntegerField('price')
     status = IntegerField('status')
+    submit = SubmitField()
 
 
 class DeleteSeatForm(FlaskForm):

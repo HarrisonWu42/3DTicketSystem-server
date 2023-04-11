@@ -19,6 +19,7 @@ from server.blueprints.seat import seat_bp
 from server.blueprints.etc import etc_bp
 from server.blueprints.media import media_bp
 from server.blueprints.openai import openai_bp
+from server.blueprints.cart import cart_bp
 
 
 def create_app(config_name=None):
@@ -57,8 +58,7 @@ def register_blueprints(app):
     app.register_blueprint(etc_bp, url_prefix='/etc')
     app.register_blueprint(openai_bp, url_prefix='/openai')
     app.register_blueprint(media_bp, url_prefix='/media')
-
-    # app.register_blueprint(taskset_bp, url_prefix='/taskset')
+    app.register_blueprint(cart_bp, url_prefix='/cart')
     # app.register_blueprint(group_bp, url_prefix='/group')
     # app.register_blueprint(project_bp, url_prefix='/project')
 

@@ -8,8 +8,6 @@
 
 
 from datetime import datetime
-
-
 from flask import Blueprint, jsonify
 from server.extensions import db
 from server.models import Etc
@@ -76,6 +74,28 @@ def edit():
                                                                 'update_timestamp': etc.update_timestamp})
 
 
+# 删除场次
+@etc_bp.route('/delete', methods=['POST'])
+def delete():
+    form = DeleteEtcForm()
+    id = form.id.data
+    etc = Etc.query.get(id)
+
+    if etc is None:
+        return jsonify(code=403, message='Etc not exist.')
+
+    db.session.delete(etc)
+    db.session.commit()
+
+    return jsonify(code=200, message='Delete etc success.', data={'id': etc.id,
+                                                                   'name': etc.name,
+                                                                   'description': etc.description,
+                                                                   'begin_timestamp': etc.begin_timestamp,
+                                                                   'end_timestamp': etc.end_timestamp,
+                                                                   'create_timestamp': etc.create_timestamp,
+                                                                   'update_timestamp': etc.update_timestamp})
+
+
 # 查询场次详细信息
 @etc_bp.route('/query/<etc_id>', methods=['GET'])
 def query_etc_info(etc_id):
@@ -114,25 +134,3 @@ def search_by_name(etc_name):
                                                        'end_timestamp': etc.end_timestamp,
                                                        'create_timestamp': etc.create_timestamp,
                                                        'update_timestamp': etc.update_timestamp})
-
-
-# 删除场次
-@etc_bp.route('/delete', methods=['POST'])
-def delete():
-    form = DeleteEtcForm()
-    id = form.id.data
-    etc = Etc.query.get(id)
-
-    if etc is None:
-        return jsonify(code=403, message='Etc not exist.')
-
-    db.session.delete(etc)
-    db.session.commit()
-
-    return jsonify(code=200, message='Delete etc success.', data={'id': etc.id,
-                                                                   'name': etc.name,
-                                                                   'description': etc.description,
-                                                                   'begin_timestamp': etc.begin_timestamp,
-                                                                   'end_timestamp': etc.end_timestamp,
-                                                                   'create_timestamp': etc.create_timestamp,
-                                                                   'update_timestamp': etc.update_timestamp})

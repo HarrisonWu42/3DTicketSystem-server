@@ -17,23 +17,28 @@ from server.extensions import db
 
 # Relation Table
 # Cart
-cart_table = db.Table('cart',
-                db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                db.Column('seat_id', db.Integer, db.ForeignKey('seat.id')),
-                db.Column('etc_id', db.Integer),    # 不确定要不要连外键，再说
-                db.Column('select_status', db.Boolean, default=False),
-                db.Column('create_timestamp', db.DateTime, default=datetime.utcnow),
-                db.Column('update_timestamp', db.DateTime)
-                )   # many-to-many
+# cart_table = db.Table('cart',
+#                 db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+#                 db.Column('seat_id', db.Integer, db.ForeignKey('seat.id')),
+#                 db.Column('etc_id', db.Integer),    # 不确定要不要连外键，再说
+#                 db.Column('select_status', db.Boolean, default=False),
+#                 db.Column('create_timestamp', db.DateTime, default=datetime.utcnow),
+#                 db.Column('update_timestamp', db.DateTime, default=datetime.utcnow)
+#                 )   # many-to-many
 
-# class Cart(db.Model):
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-#     etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))
-#     seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'))
-#     select_status = db.Column(db.Integer)
-#     create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-#     update_timestamp = db.Column(db.DateTime)
+
+class Cart(db.Model):
+    __tablename__ = 'cart'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    # etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'), primary_key=True)
+    etc_id = db.Column(db.Integer)
+    seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'), primary_key=True)
+    select_status = db.Column(db.Integer, default=0)
+    create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    update_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', back_populates='user_seats')
+    seat = db.relationship('Seat', back_populates='seat_users')
 
 
 class User(db.Model, UserMixin):
@@ -47,7 +52,7 @@ class User(db.Model, UserMixin):
     delete_timestamp = db.Column(db.DateTime)
 
     orders = db.relationship("Order", back_populates="user")    # one-to-many
-    seats = db.relationship("Seat", secondary=cart_table, back_populates="users")  # many-to-many
+    user_seats = db.relationship("Cart", back_populates="user")  # many-to-many
 
     def get_id(self):
         return self.id
@@ -73,6 +78,22 @@ class User(db.Model, UserMixin):
         return self.deleted == 1
 
 
+class Seat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
+    type = db.Column(db.String(30))
+    create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    update_timestamp = db.Column(db.DateTime)
+    price = db.Column(db.Integer)
+    status = db.Column(db.Integer, default=0)
+
+    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))  # many
+    etc = db.relationship('Etc', back_populates="seats")
+    ticket = db.relationship('Ticket', uselist=False)
+
+    seat_users = db.relationship("Cart", back_populates="seat")   # many-to-many
+
+
 class Etc(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
@@ -88,22 +109,6 @@ class Etc(db.Model):
     seats = db.relationship("Seat", back_populates="etc")
     medias = db.relationship("Media", back_populates="etc")
     ticket = db.relationship('Ticket', uselist=False)
-
-
-class Seat(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30))
-    type = db.Column(db.String(30))
-    create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    update_timestamp = db.Column(db.DateTime)
-    price = db.Column(db.Integer)
-    status = db.Column(db.Integer, default=0)
-
-    etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))  # many
-    etc = db.relationship('Etc', back_populates="seats")
-    ticket = db.relationship('Ticket', uselist=False)
-
-    users = db.relationship("User", secondary=cart_table, back_populates="seats")   # many-to-many
 
 
 class Media(db.Model):

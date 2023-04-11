@@ -17,6 +17,7 @@ class AddEtcForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired(), Length(1, 254)])
     begin_timestamp = DateTimeField('begin_timestamp')
     end_timestamp = DateTimeField('begin_timestamp')
+    submit = SubmitField()
 
 
 class EditEtcForm(FlaskForm):
@@ -25,6 +26,7 @@ class EditEtcForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired(), Length(1, 254)])
     begin_timestamp = DateTimeField('begin_timestamp')
     end_timestamp = DateTimeField('begin_timestamp')
+    submit = SubmitField()
 
 
 class DeleteEtcForm(FlaskForm):
