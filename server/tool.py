@@ -13,9 +13,9 @@ import openai
 from server.settings import OPENAI_API_KEY
 import numpy as np
 
-def create_temperatures(n):
-    temperatures = np.random.uniform(low=14.0, high=20.0, size=n)
-    return temperatures
+# def create_temperatures(n):
+#     temperatures = np.random.uniform(low=14.0, high=20.0, size=n)
+#     return temperatures
 
 
 openai.api_key = OPENAI_API_KEY
@@ -56,14 +56,15 @@ openai.api_key = OPENAI_API_KEY
 # print(image_url)
 
 
-response = openai.ChatCompletion.create(
-  model="gpt-3.5-turbo-0301",
-  prompt="The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How can I help you today?\nHuman: I'd like to cancel my subscription.\nAI:",
-  temperature=0.9,
-  max_tokens=150,
-  top_p=1,
-  frequency_penalty=0.0,
-  presence_penalty=0.6,
-  stop=[" Human:", " AI:"]
-)
-print(response)
+# response = openai.ChatCompletion.create(
+#   model="gpt-3.5-turbo-0301",
+#   prompt="The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How can I help you today?\nHuman: I'd like to cancel my subscription.\nAI:",
+#   temperature=0.9,
+#   max_tokens=150,
+#   top_p=1,
+#   frequency_penalty=0.0,
+#   presence_penalty=0.6,
+#   stop=[" Human:", " AI:"]
+# )
+# print(response)
+

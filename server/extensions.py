@@ -12,6 +12,7 @@ from flask_login import LoginManager, AnonymousUserMixin
 # from flask_mail import Mail
 from flask_moment import Moment
 
+
 db = SQLAlchemy()
 login_manager = LoginManager()
 # mail = Mail()

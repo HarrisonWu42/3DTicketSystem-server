@@ -112,6 +112,7 @@ class Etc(db.Model):
     ticket = db.relationship('Ticket', uselist=False)
     etc_users = db.relationship("Bullet", back_populates="etc")  # many-to-many
 
+
 class Media(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
@@ -128,13 +129,13 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_number = db.Column(db.String(30))
     total = db.Column(db.Integer)
-    status = db.Column(db.Integer)
+    status = db.Column(db.Integer, default=0)
     create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    update_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))   # many-to-one
     user = db.relationship('User', back_populates="orders")     # many-to-one
-    ticket = db.relationship('Ticket', uselist=False)
+    tickets = db.relationship('Ticket')
 
 
 class Ticket(db.Model):

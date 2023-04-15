@@ -60,7 +60,7 @@ def fake_etc(count=10):
 def fake_seat(count=10):
     for i in range(count):
         seat = Seat(name='seat' + fake.postcode(),
-                   price=180)
+                    price=180)
         db.session.add(seat)
         try:
             db.session.commit()
