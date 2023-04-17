@@ -10,7 +10,7 @@
 from datetime import datetime
 from math import ceil
 
-from flask import Blueprint, jsonify, redirect
+from flask import Blueprint, jsonify, redirect, request
 from server.extensions import db
 from server.models import Ticket, Seat, Order, User
 from server.forms.order import AddOrderForm, EditOrderForm, DeleteOrderForm
@@ -207,3 +207,47 @@ def pay():
 
 
 # 支付成功回调
+@order_bp.route('/pay/result/', methods=['GET', 'POST'])
+def pay_result():
+    charset = request.args.get('charset')
+    out_trade_no = request.args.get('out_trade_no')
+    method = request.args.get('method')
+    total_amount = request.args.get('total_amount')
+    sign = request.args.get('sign')
+    trade_no = request.args.get('trade_no')
+    auth_app_id = request.args.get('auth_app_id')
+    version = request.args.get('version')
+    app_id = request.args.get('app_id')
+    sign_type = request.args.get('sign_type')
+    seller_id = request.args.get('seller_id')
+    timestamp = request.args.get('timestamp')
+    data = {'charset': charset, 'out_trade_no': out_trade_no, 'method': method, 'total_amount': total_amount,
+            'sign': sign, 'trade_no': trade_no, 'auth_app_id': auth_app_id, 'version': version, 'app_id': app_id,
+            'sign_type': sign_type, 'seller_id': seller_id, 'timestamp': timestamp}
+
+    # 同步回调
+    if request.method == "GET":
+        # 进行校验，因为支付成功之后，后端是不知道是否成功的，所以需要校验一下
+        alipay = alipay_obj()
+        signature = data.pop("sign")
+        # verification
+        success = alipay.verify(data, signature)  # success ----> True False
+        order = Order.query.filter_by(order_number=out_trade_no).first()
+        if success is True:     # 支付成功，要写逻辑了
+            order.status = 1
+            tickets = order.tickets
+            for ticket in tickets:
+                ticket.status = 1
+            db.session.commit()
+            return jsonify(code=200, message='Pay success.')
+
+        return jsonify(code=200, message='Pay failed.')
+
+    # 异步回调，当你前端页面崩了以后，支付宝会向该路由，发送post请求，这个是间隔发8次，如果没有返回success
+    alipay = alipay_obj()
+    signature = data.pop("sign")
+    success = alipay.verify(data, signature)  # True False
+    if success and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
+        print('pay success')
+        return jsonify(code=200, message='Pay success.')
+    return jsonify(code=200, message='Pay failed.')
