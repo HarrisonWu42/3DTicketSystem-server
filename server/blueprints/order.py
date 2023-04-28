@@ -202,7 +202,7 @@ def pay():
     # 我这里大概讲一下为什么要有同步/异步，因为同步是前端的，
     # 如果前端出现页面崩了，那么校验有后端完成，
     # 而且在实际开发中，后端一定要校验，因为前端的校验，可被修改
-    url = 'https://openapi.alipaydev.com/gateway.do' + '?' + order_string
+    url = 'https://openapi.alipayevd.com/gateway.do' + '?' + order_string
     return jsonify(code=200, url=url, data=data)
 
 

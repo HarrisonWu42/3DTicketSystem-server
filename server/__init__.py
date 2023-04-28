@@ -8,6 +8,8 @@
 
 
 import os
+import datetime
+
 from flask import Flask
 from flask_cors import CORS
 from flask_login import current_user
@@ -32,6 +34,7 @@ def create_app(config_name=None):
     CORS(app, supports_credentials=True)
 
     app.config.from_pyfile('settings.py')
+    # app.permanent_session_lifetime = datetime.timedelta(seconds=10)
 
     register_logging(app)  # 注册日志处理器
     register_extensions(app)  # 注册拓展

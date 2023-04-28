@@ -29,8 +29,12 @@ def add():
     description = form.description.data
     begin_timestamp = form.begin_timestamp.data
     end_timestamp = form.end_timestamp.data
-    etc = Etc(name=name, description=description, begin_timestamp=begin_timestamp, end_timestamp=end_timestamp)
 
+    etc = Etc.query.filter_by(name=name, description=description, begin_timestamp=begin_timestamp, end_timestamp=end_timestamp).first()
+    if etc is not None:
+        return jsonify(code=401, message="Etc already exist.")
+
+    etc = Etc(name=name, description=description, begin_timestamp=begin_timestamp, end_timestamp=end_timestamp)
     db.session.add(etc)
     db.session.commit()
 

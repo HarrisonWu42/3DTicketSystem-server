@@ -24,22 +24,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'secret string')
 
-# """
-#     Email
-# """
-# MAIL_SERVER = 'smtp.qq.com'
-# MAIL_PORT = 465
-# MAIL_USE_SSL = True
-# MAIL_USE_TLS = False
-# MAIL_USERNAME = 'hangzhouwh@qq.com'
-# ADMIN_EMAIL = MAIL_USERNAME
-# TEACHER_EMAIL = 'zucc.edu.cn'
-# MAIL_PASSWORD = 'xopwpdloezkvcaig'  # qq邮箱授权码
-# MAIL_DEFAULT_SENDER = ('ScratchAi Admin', MAIL_USERNAME)
-# SCRATCHAI_MAIL_SUBJECT_PREFIX = '[scratchai]'
-#
-# FILE_FOLDER = 'path/to/file_folder'
-# ALLOWED_FILETYPES = set(['sb3'])
 
 
 """

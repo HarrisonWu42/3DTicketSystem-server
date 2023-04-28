@@ -5,8 +5,7 @@
 # @Author : HarrisonWu42
 # @Email: harrisonwu.com@gmail.com
 # @Software: PyCharm
-
-
+from flask import session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, AnonymousUserMixin
 # from flask_mail import Mail
@@ -23,6 +22,7 @@ moment = Moment()
 def load_user(user_id):
     from server.models import User
     user = User.query.get(int(user_id))
+    # session.permanent = True
     return user
 
 

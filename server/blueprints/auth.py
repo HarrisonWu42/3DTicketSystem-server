@@ -3,7 +3,6 @@
 # @File : auth.py
 # @Time : 2023/3/13 10:37
 # @Author : HarrisonWu42
-# @Email: harrisonwu.com@gmail.com
 # @Software: PyCharm
 
 
@@ -67,8 +66,8 @@ def logout():
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-    if current_user.is_authenticated:
-        return jsonify(code=303, message="Redirect to main page.")
+    # if current_user.is_authenticated:
+    #     return jsonify(code=303, message="Redirect to main page.")
 
     form = RegisterForm()
 
