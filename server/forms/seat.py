@@ -13,6 +13,7 @@ from wtforms.validators import DataRequired, Length
 
 
 class AddSeatForm(FlaskForm):
+    etc_id = IntegerField('etc_id')
     name = StringField('name', validators=[DataRequired(), Length(1, 30)])
     type = StringField('type', validators=[DataRequired(), Length(1, 30)])
     price = IntegerField('price')

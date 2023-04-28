@@ -27,12 +27,20 @@ def add():
     name = form.name.data
     type = form.type.data
     price = form.price.data
-    seat = Seat(name=name, type=type, price=price)
+    etc_id = form.etc_id.data
 
+    etc = Etc.query.get(etc_id)
+    if etc is None:
+        return jsonify(code=403, message="Etc not exist.")
+
+    seat = Seat.query.filter_by(name=name, type=type, price=price, etc_id=etc_id).first()
+    if seat is not None:
+        return jsonify(code=401, message="Seat already exist.")
+
+    seat = Seat(name=name, type=type, price=price)
+    seat.etc = etc
     db.session.add(seat)
     db.session.commit()
-
-    seat = Seat.query.filter_by(name=name).first()
 
     return jsonify(code=200, message="Add seat success.", data={'id': seat.id,
                                                                 'name': seat.name,
@@ -57,7 +65,7 @@ def edit():
 
     seat = Seat.query.get(id)
     if seat is None:
-        return jsonify(code=400, message="Seat not exist.")
+        return jsonify(code=403, message="Seat not exist.")
 
     seat.name = name
     seat.type = type
@@ -130,7 +138,7 @@ def query_by_etc(etc_id, offset, page_size):
 
     etc = Etc.query.filter_by(id=etc_id).first()
     if etc is None:
-        return jsonify(code=401, message='Etc not exist.')
+        return jsonify(code=403, message='Etc not exist.')
 
     seats = Seat.query.filter_by(etc_id=etc_id).all()
     page_seats = seats[(offset - 1) * page_size: offset * page_size]
@@ -143,9 +151,10 @@ def query_by_etc(etc_id, offset, page_size):
 
 
 # 查询座位
-@seat_bp.route('/search_by_name/<seat_name>', methods=['GET'])
-def search_by_name(seat_name):
-    seat = Seat.query.filter_by(name=seat_name).first()
+@seat_bp.route('/search_by_name/<etc_id>/<seat_name>', methods=['GET'])
+def search_by_name(etc_id, seat_name):
+    etc_id = int(etc_id)
+    seat = Seat.query.filter_by(name=seat_name, etc_id=etc_id).first()
     if seat is None:
         return jsonify(code=403, message='Seat not exist.')
 
