@@ -41,7 +41,7 @@ def add():
 
     cart = Cart.query.get((user_id, seat_id))
     if cart is not None:
-        return jsonify(code=200, message="Cart exist.")
+        return jsonify(code=401, message="Cart already exist.")
 
     cart = Cart(user_id=user_id, seat_id=seat_id, etc_id=etc_id)
     db.session.add(cart)

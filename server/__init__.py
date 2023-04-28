@@ -20,7 +20,7 @@ from server.blueprints.auth import auth_bp
 from server.blueprints.seat import seat_bp
 from server.blueprints.etc import etc_bp
 from server.blueprints.media import media_bp
-from server.blueprints.openai import openai_bp
+# from server.blueprints.openai import openai_bp
 from server.blueprints.cart import cart_bp
 from server.blueprints.bullet import bullet_bp
 from server.blueprints.order import order_bp
@@ -60,7 +60,7 @@ def register_blueprints(app):
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(seat_bp, url_prefix='/seat')
     app.register_blueprint(etc_bp, url_prefix='/etc')
-    app.register_blueprint(openai_bp, url_prefix='/openai')
+    # app.register_blueprint(openai_bp, url_prefix='/openai')
     app.register_blueprint(media_bp, url_prefix='/media')
     app.register_blueprint(cart_bp, url_prefix='/cart')
     app.register_blueprint(bullet_bp, url_prefix='/bullet')
