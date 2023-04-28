@@ -19,6 +19,7 @@ from server.forms.bullet import AddBulletForm
 bullet_bp = Blueprint('bullet', __name__)
 
 
+# 写留言
 @bullet_bp.route('/write', methods=['POST'])
 def write():
     form = AddBulletForm()
@@ -31,7 +32,7 @@ def write():
         return jsonify(code=403, message='User not exist.')
     etc = Etc.query.get(etc_id)
     if etc is None:
-        return jsonify(code=403, message='Etc not exist.')
+        return jsonify(code=402, message='Etc not exist.')
 
     bullet = Bullet(user_id=user_id, etc_id=etc_id, msg=msg)
     db.session.add(bullet)
@@ -44,6 +45,7 @@ def write():
                                                                   'msg': msg})
 
 
+# 查询留言
 @bullet_bp.route('/query/<etc_id>/<offset>/<page_size>', methods=['GET'])
 def query(etc_id, offset, page_size):
     etc_id = int(etc_id)
