@@ -119,7 +119,7 @@ class Media(db.Model):
     type = db.Column(db.Integer)
     url = db.Column(db.String(120))
     create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    update_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))
     etc = db.relationship('Etc', back_populates="medias")

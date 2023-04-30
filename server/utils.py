@@ -14,6 +14,30 @@ from alipay.utils import AliPayConfig
 from server.settings import ALIPAY_SETTING
 import datetime
 
+import oss2
+
+
+class AliyunOss(object):
+    def __init__(self):
+        self.access_key_id = "LTAI5t8pHVm8Xn7TZyDXCqJN"  # 从阿里云查询到的 AccessKey 的ID
+        self.access_key_secret = "xeDexfxUApQ8rw1IyFKTQE0ojmBlSC"  # 从阿里云查询到的 AccessKey 的Secret
+        self.auth = oss2.Auth(self.access_key_id, self.access_key_secret)
+        self.bucket_name = "software-3dticket42"  # 阿里云上创建好的Bucket的名称
+        self.endpoint = "oss-cn-guangzhou.aliyuncs.com"  # 阿里云从Bucket中查询到的endpoint
+        self.bucket = oss2.Bucket(self.auth, self.endpoint, self.bucket_name)
+
+    def put_object_from_file(self, name, file):
+        """
+        :param name: 在阿里云Bucket中要保存的文件名
+        :param file: 本地文件的文件名
+        :return:
+        """
+        self.bucket.put_object_from_file(name, file)
+        return "https://{}.{}/{}".format(self.bucket_name, self.endpoint, name)
+
+
+
+
 def generate_order_number():
     return ''.join(random.choices(string.digits, k=30))
 
