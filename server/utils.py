@@ -12,7 +12,7 @@ import string
 from alipay import AliPay, DCAliPay, ISVAliPay
 from alipay.utils import AliPayConfig
 from server.settings import ALIPAY_SETTING
-
+import datetime
 
 def generate_order_number():
     return ''.join(random.choices(string.digits, k=30))
@@ -133,3 +133,9 @@ def orders2json(orders):
 
     return json_dic
 
+
+def datetime2string(dt):
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+def string2datetime(st):
+    return datetime.datetime.strptime(st, "%Y-%m-%d %H:%M:%S")

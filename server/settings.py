@@ -21,15 +21,17 @@ BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/tickets'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'secret string')
 
 
-
-"""
-    OPENAI
-"""
-OPENAI_API_KEY = "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"
+# """
+#     OPENAI
+# """
+# OPENAI_API_KEY = "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"
 
 
 """

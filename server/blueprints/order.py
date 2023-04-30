@@ -5,20 +5,55 @@
 # @Author : HarrisonWu42
 # @Email: harrisonwu.com@gmail.com
 # @Software: PyCharm
-
-
+import json
 from datetime import datetime
 from math import ceil
-
-from flask import Blueprint, jsonify, redirect, request
-from server.extensions import db
-from server.models import Ticket, Seat, Order, User
-from server.forms.order import AddOrderForm, EditOrderForm, DeleteOrderForm
-from server.utils import generate_order_number, tickets2json, orders2json, alipay_obj
+from flask import Blueprint, jsonify, request
+from server.extensions import db, RedisExpiryListener, redis_db
+from server.models import Ticket, Seat, Order, User, Cart
+from server.forms.order import AddOrderForm, EditOrderForm, DeleteOrderForm, PayOrderForm
+from server.utils import generate_order_number, tickets2json, orders2json, alipay_obj, datetime2string, string2datetime
 from server.settings import ALIPAY_SETTING
 
 
 order_bp = Blueprint('order', __name__)
+
+
+# def handle_timeout_order(self, order_number):
+#     # 输出订单超时消息
+#     print(f'Rewrite {order_number} is timeout，already cancel.')
+#     order = Order.query.filter_by(order_number=order_number).first()
+#     self.db.session.delete(order)
+#     self.db.session.commit()
+# RedisExpiryListener.handle_timeout_order = handle_timeout_order
+
+
+@order_bp.route('/timeout', methods=['POST'])
+def timeout():
+    res = request.get_json()
+    order_number = res.get("order_number")
+    # print("timeout: ", order_number)
+    order = Order.query.filter_by(order_number=order_number).first()
+
+    data = tickets2json(order.tickets)
+    data['user_id'] = order.user_id
+    data['order_number'] = order_number
+    data['total'] = order.total
+    data['status'] = order.status
+    data['create_timestamp'] = order.create_timestamp
+    data['update_timestamp'] = order.update_timestamp
+    data['ticket num'] = len(order.tickets)
+
+    for ticket in order.tickets:
+        seat_id = ticket.seat_id
+        seat = Seat.query.get(seat_id)
+        seat.status = 2
+        db.session.delete(ticket)
+
+    db.session.delete(order)
+    db.session.commit()
+
+    return jsonify(code=200, message="The order timeout", data=data)
 
 
 # 生成订单
@@ -45,6 +80,8 @@ def add():
         seat = Seat.query.get(seat_id)
         seat_list.append(seat)
         total += seat.price
+        cart = Cart.query.get((user_id, seat_id))
+        db.session.delete(cart)
 
     order = Order(user_id=user_id, order_number=order_number, total=total)
 
@@ -66,6 +103,8 @@ def add():
         db.session.add(ticket)
 
     db.session.commit()
+
+    redis_db.redis_conn.setex(order_number, 15*60, datetime2string(order.create_timestamp))
 
     data = tickets2json(ticket_list)
     data['user_id'] = user_id
@@ -116,6 +155,8 @@ def delete():
     order = Order.query.filter_by(order_number=order_number).first()
     if order is None:
         return jsonify(code=403, message='Order not exist.')
+    if order.status is 0:
+        return jsonify(code=406, message='The order has not been paid or canceled, please check the order status.')
 
     for ticket in order.tickets:
         db.session.delete(ticket)
@@ -174,7 +215,7 @@ def query_info(order_number):
 # 支付功能
 @order_bp.route('/pay', methods=['POST'])
 def pay():
-    form = DeleteOrderForm()
+    form = PayOrderForm()
 
     order_number = form.order_number.data
     order = Order.query.filter_by(order_number=order_number).first()
@@ -192,7 +233,6 @@ def pay():
 
     alipay = alipay_obj()
     order_string = alipay.api_alipay_trade_page_pay(
-        # 这下面的数据，都应该是你数据库的数据，但是我这里做测试，直接写死了
         out_trade_no=order_number,  # 商品订单号  唯一的
         total_amount=order.total,  # 商品价格
         subject='3DTicketSystem',  # 商品的名称
@@ -202,7 +242,7 @@ def pay():
     # 我这里大概讲一下为什么要有同步/异步，因为同步是前端的，
     # 如果前端出现页面崩了，那么校验有后端完成，
     # 而且在实际开发中，后端一定要校验，因为前端的校验，可被修改
-    url = 'https://openapi.alipayevd.com/gateway.do' + '?' + order_string
+    url = 'https://openapi.alipaydev.com/gateway.do' + '?' + order_string
     return jsonify(code=200, url=url, data=data)
 
 
@@ -239,8 +279,7 @@ def pay_result():
             for ticket in tickets:
                 ticket.status = 1
             db.session.commit()
-            return jsonify(code=200, message='Pay success.')
-
+            return jsonify(code=200, message='Pay success. Synchronous callback.')
         return jsonify(code=200, message='Pay failed.')
 
     # 异步回调，当你前端页面崩了以后，支付宝会向该路由，发送post请求，这个是间隔发8次，如果没有返回success
@@ -249,5 +288,7 @@ def pay_result():
     success = alipay.verify(data, signature)  # True False
     if success and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
         print('pay success')
-        return jsonify(code=200, message='Pay success.')
+        return jsonify(code=200, message='Pay success. Asynchronous callback.')
     return jsonify(code=200, message='Pay failed.')
+
+

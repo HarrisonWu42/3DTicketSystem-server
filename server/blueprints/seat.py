@@ -10,7 +10,7 @@
 from datetime import datetime
 from math import ceil
 
-from flask import redirect, url_for, Blueprint, make_response, jsonify, request
+from flask import Blueprint, jsonify
 from server.extensions import db
 from server.models import Seat, Etc
 from server.forms.seat import AddSeatForm, EditSeatForm, DeleteSeatForm

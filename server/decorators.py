@@ -9,7 +9,7 @@
 
 from functools import wraps
 
-from flask import Markup, flash, url_for, redirect, abort, jsonify
+from flask import abort, jsonify
 from flask_login import current_user
 
 

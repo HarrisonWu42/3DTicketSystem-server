@@ -87,7 +87,7 @@ class Seat(db.Model):
     create_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     update_timestamp = db.Column(db.DateTime)
     price = db.Column(db.Integer)
-    status = db.Column(db.Integer, default=0)
+    status = db.Column(db.Integer, default=2)
 
     etc_id = db.Column(db.Integer, db.ForeignKey('etc.id'))  # many
     etc = db.relationship('Etc', back_populates="seats")
@@ -149,3 +149,4 @@ class Ticket(db.Model):
     seat_name = db.Column(db.String(30))
     seat_type = db.Column(db.Integer)
     price = db.Column(db.Integer)
+    status = db.Column(db.Integer, default=0)

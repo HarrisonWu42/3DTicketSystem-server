@@ -13,7 +13,7 @@ import datetime
 from flask import Flask
 from flask_cors import CORS
 from flask_login import current_user
-from server.extensions import db, login_manager
+from server.extensions import db, login_manager, redis_db
 from server.models import User
 from server.blueprints.user import user_bp
 from server.blueprints.auth import auth_bp
@@ -32,6 +32,7 @@ def create_app(config_name=None):
 
     app = Flask('server')
     CORS(app, supports_credentials=True)
+    # print('!!!!!!!!')
 
     app.config.from_pyfile('settings.py')
     # app.permanent_session_lifetime = datetime.timedelta(seconds=10)
@@ -39,7 +40,7 @@ def create_app(config_name=None):
     register_logging(app)  # 注册日志处理器
     register_extensions(app)  # 注册拓展
     register_blueprints(app)  # 注册蓝本
-    regitser_shell_context(app)  # 注册shell上下文处理函数
+    # regitser_shell_context(app)  # 注册shell上下文处理函数
     return app
 
 
@@ -50,6 +51,8 @@ def register_logging(app):
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
+    # print("---------------")
+    redis_db.init_app(app)
     # mail.init_app(app)
     # moment.init_app(app)
     # flask_excel.init_excel(app)
@@ -67,7 +70,7 @@ def register_blueprints(app):
     app.register_blueprint(order_bp, url_prefix='/order')
 
 
-def regitser_shell_context(app):
-    @app.shell_context_processor
-    def make_shell_context():
-        return dict(db=db, User=User)
+# def regitser_shell_context(app):
+#     @app.shell_context_processor
+#     def make_shell_context():
+#         return dict(db=db, User=User)
